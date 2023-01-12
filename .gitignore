@@ -1,4 +1,5 @@
 /.bundle/
+/.idea/
 /.yardoc
 /_yardoc/
 /coverage/
@@ -9,6 +10,5 @@
 /.bundle/
 /tmp/
 .rubocop-*
-.idea
 .byebug_history
 sorbet/rbi/hidden-definitions/errors.txt
