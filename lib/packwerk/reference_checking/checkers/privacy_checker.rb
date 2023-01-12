@@ -50,7 +50,8 @@ module Packwerk
 
           message = <<~EOS
             Privacy violation: '#{reference.constant.name}' is private to '#{reference.constant.package}' but referenced from #{source_desc}.
-            Is there a public entrypoint in '#{reference.constant.package.public_path}' that you can use instead?
+            Is there a public entrypoint from any of the following constants that you can use instead?
+            --> '#{reference.constant.package.public_constants.join(', ')}'
 
             #{standard_help_message(reference)}
           EOS
