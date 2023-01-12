@@ -20,7 +20,11 @@ module Packwerk
       def call(reference)
         @checkers.each_with_object([]) do |checker, violations|
           invalid_reference = checker.invalid_reference?(reference)
-          collect_reference(reference, invalid_reference, checker)
+          @reference_collector.collect_reference(
+            reference: reference,
+            violation_type: checker.violation_type,
+            valid: !invalid_reference,
+          )
 
           next unless invalid_reference
 
@@ -31,23 +35,6 @@ module Packwerk
             message: checker.message(reference)
           )
           violations << offense
-        end
-      end
-
-      private
-
-      sig do
-        params(
-          reference: Reference,
-          invalid_reference: T::Boolean,
-          checker: Checkers::Checker,
-        ).void
-      end
-      def collect_reference(reference, invalid_reference, checker)
-        if invalid_reference
-          @reference_collector.collect_invalid(reference: reference, violation_type: checker.violation_type)
-        else
-          @reference_collector.collect_valid(reference: reference, violation_type: checker.violation_type)
         end
       end
     end
