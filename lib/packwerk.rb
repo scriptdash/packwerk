@@ -32,6 +32,7 @@ module Packwerk
   autoload :NodeProcessor
   autoload :NodeProcessorFactory
   autoload :NodeVisitor
+  autoload :NoOpReferenceCollector
   autoload :Offense
   autoload :OffensesFormatter
   autoload :OutputStyle
@@ -43,6 +44,7 @@ module Packwerk
   autoload :UnresolvedReference
   autoload :Reference
   autoload :ReferenceExtractor
+  autoload :ReferenceCollector
   autoload :ReferenceOffense
   autoload :Result
   autoload :RunContext

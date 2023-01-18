@@ -34,7 +34,8 @@ module Packwerk
     DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
-      :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path, :cache_directory
+      :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path, :cache_directory,
+      :reference_collector
     )
 
     def initialize(configs = {}, config_path: nil)
@@ -48,10 +49,27 @@ module Packwerk
       @cache_enabled = configs.key?("cache") ? configs["cache"] : false
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
+      @reference_collector = nil
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
           ExtensionLoader.load(require_directive, @root_path)
+        end
+      end
+
+      if configs.key?("reference_collector")
+        ExtensionLoader.load(configs["reference_collector"], @root_path)
+
+        ObjectSpace.each_object(Class) do |klass|
+          if T.unsafe(klass) < Packwerk::ReferenceCollector && klass != Packwerk::NoOpReferenceCollector
+            @reference_collector = T.unsafe(klass).new
+          end
+        end
+
+        if @reference_collector.nil?
+          raise ArgumentError,
+            "reference_collector must be of type Packwerk::ReferenceCollector. " \
+              "No such class found in #{configs["reference_collector"]}"
         end
       end
     end
