@@ -109,6 +109,7 @@ module Packwerk
       end
 
       @progress_formatter.finished(execution_time)
+      run_context.stop_collector
 
       all_offenses.each { |offense| offense_collection.add_offense(offense) }
       offense_collection
