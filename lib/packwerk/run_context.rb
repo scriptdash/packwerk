@@ -101,6 +101,11 @@ module Packwerk
       @package_set ||= ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
+    sig { void }
+    def stop_collector
+      @reference_collector.stop
+    end
+
     private
 
     sig { returns(FileProcessor) }
