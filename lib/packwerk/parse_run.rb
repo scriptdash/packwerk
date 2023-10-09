@@ -65,7 +65,7 @@ module Packwerk
     sig { returns(Result) }
     def check
       run_context = Packwerk::RunContext.from_configuration(@configuration)
-      offense_collection = find_offenses(run_context, show_errors: true, collect_references: true)
+      offense_collection = find_offenses(run_context, show_errors: true, collect_references: true, filter_violations: true)
 
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
@@ -84,17 +84,18 @@ module Packwerk
       params(
         run_context: Packwerk::RunContext,
         show_errors: T::Boolean,
-        collect_references: T::Boolean
+        collect_references: T::Boolean,
+        filter_violations: T::Boolean
       ).returns(OffenseCollection)
     end
-    def find_offenses(run_context, show_errors: false, collect_references: false)
+    def find_offenses(run_context, show_errors: false, collect_references: false, filter_violations: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
       @progress_formatter.started(@relative_file_set)
 
       all_offenses = T.let([], T::Array[Offense])
 
       process_file = T.let(->(relative_file) do
-        run_context.process_file(relative_file: relative_file, collect_references: collect_references).tap do |offenses|
+        run_context.process_file(relative_file: relative_file, collect_references: collect_references, filter_violations: filter_violations).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
         end

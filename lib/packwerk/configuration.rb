@@ -35,7 +35,7 @@ module Packwerk
 
     attr_reader(
       :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path, :cache_directory,
-      :reference_collector
+      :reference_collector, :violation_filter,
     )
 
     def initialize(configs = {}, config_path: nil)
@@ -50,6 +50,7 @@ module Packwerk
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
       @reference_collector = nil
+      @violation_filter = nil
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
@@ -70,6 +71,23 @@ module Packwerk
           raise ArgumentError,
             "reference_collector must be of type Packwerk::ReferenceCollector. " \
               "No such class found in #{configs["reference_collector"]}"
+        end
+      end
+
+      if configs.key?("violation_filter")
+        puts configs["violation_filter"]
+        ExtensionLoader.load(configs["violation_filter"], @root_path)
+
+        ObjectSpace.each_object(Class) do |klass|
+          if T.unsafe(klass) < Packwerk::ViolationFilter && klass != Packwerk::NoOpViolationFilter
+            @violation_filter = T.unsafe(klass).new
+          end
+        end
+
+        if @violation_filter.nil?
+          raise ArgumentError,
+                "reference_collector must be of type Packwerk::ViolationFilter. " \
+              "No such class found in #{configs["violation_filter"]}"
         end
       end
     end

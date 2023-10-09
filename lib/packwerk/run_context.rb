@@ -32,6 +32,7 @@ module Packwerk
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
           reference_collector: configuration.reference_collector,
+          violation_filter: configuration.violation_filter,
         )
       end
     end
@@ -48,6 +49,7 @@ module Packwerk
         checkers: T::Array[ReferenceChecking::Checkers::Checker],
         cache_enabled: T::Boolean,
         reference_collector: T.nilable(ReferenceCollector),
+        violation_filter: T.nilable(ViolationFilter),
       ).void
     end
     def initialize(
@@ -60,7 +62,8 @@ module Packwerk
       custom_associations: [],
       checkers: DEFAULT_CHECKERS,
       cache_enabled: false,
-      reference_collector: nil
+      reference_collector: nil,
+      violation_filter: nil
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -80,18 +83,20 @@ module Packwerk
         Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path), Cache
       )
       @reference_collector = T.let(reference_collector || NoOpReferenceCollector.new, ReferenceCollector)
+      @violation_filter = T.let(violation_filter || NoOpViolationFilter.new, ViolationFilter)
     end
 
-    sig { params(relative_file: String, collect_references: T::Boolean).returns(T::Array[Packwerk::Offense]) }
-    def process_file(relative_file:, collect_references: false)
+    sig { params(relative_file: String, collect_references: T::Boolean, filter_violations: T::Boolean).returns(T::Array[Packwerk::Offense]) }
+    def process_file(relative_file:, collect_references: false, filter_violations: false)
       processed_file = file_processor.call(relative_file)
       reference_collector = collect_references ? @reference_collector : NoOpReferenceCollector.new
+      violation_filter = filter_violations ? @violation_filter : NoOpViolationFilter.new
 
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,
         context_provider
       )
-      reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers, reference_collector)
+      reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers, reference_collector, violation_filter)
 
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
     end

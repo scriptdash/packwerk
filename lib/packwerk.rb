@@ -33,6 +33,7 @@ module Packwerk
   autoload :NodeProcessorFactory
   autoload :NodeVisitor
   autoload :NoOpReferenceCollector
+  autoload :NoOpViolationFilter
   autoload :Offense
   autoload :OffensesFormatter
   autoload :OutputStyle
@@ -49,6 +50,7 @@ module Packwerk
   autoload :Result
   autoload :RunContext
   autoload :Version
+  autoload :ViolationFilter
 
   module OutputStyles
     extend ActiveSupport::Autoload

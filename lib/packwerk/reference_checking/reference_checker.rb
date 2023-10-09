@@ -6,10 +6,21 @@ module Packwerk
     class ReferenceChecker
       extend T::Sig
 
-      sig { params(checkers: T::Array[Checkers::Checker], reference_collector: ReferenceCollector).void }
-      def initialize(checkers, reference_collector = NoOpReferenceCollector.new)
+      sig do
+        params(
+          checkers: T::Array[Checkers::Checker],
+          reference_collector: ReferenceCollector,
+          violation_filter: ViolationFilter,
+        ).void
+      end
+      def initialize(
+        checkers,
+        reference_collector = NoOpReferenceCollector.new,
+        violation_filter = NoOpViolationFilter.new
+      )
         @checkers = checkers
         @reference_collector = reference_collector
+        @violation_filter = violation_filter
       end
 
       sig do
@@ -27,6 +38,7 @@ module Packwerk
           )
 
           next unless invalid_reference
+          next if @violation_filter.ignore_violation?(reference)
 
           offense = Packwerk::ReferenceOffense.new(
             location: reference.source_location,
