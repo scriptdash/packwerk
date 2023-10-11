@@ -32,7 +32,8 @@ module Packwerk
             location: reference.source_location,
             reference: reference,
             violation_type: checker.violation_type,
-            message: checker.message(reference)
+            message: checker.message(reference),
+            level: checker.violation_level(reference),
           )
           violations << offense
         end

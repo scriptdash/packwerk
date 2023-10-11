@@ -28,16 +28,20 @@ module Packwerk
           return false if reference.constant.public?
 
           privacy_option = reference.constant.package.enforce_privacy
-          return false if enforcement_disabled?(privacy_option)
 
-          return false unless privacy_option == true ||
-            explicitly_private_constant?(reference.constant, explicitly_private_constants: privacy_option)
+          return false if enforcement_disabled?(privacy_option) ||
+            explicitly_private_constant?(reference.constant, explicitly_private_constants: reference.constant.package.explicitly_private_constants)
 
           return false if explicitly_public_constant?(
             reference.constant, explicitly_public_constants: reference.constant.package.public_constants
           )
 
           true
+        end
+
+        sig { override.params(reference: Reference).returns(T.nilable(String)) }
+        def violation_level(reference)
+          reference.constant.package.enforce_privacy.to_s
         end
 
         sig do
@@ -84,7 +88,7 @@ module Packwerk
         end
 
         sig do
-          params(privacy_option: T.nilable(T.any(T::Boolean, T::Array[String])))
+          params(privacy_option: T.nilable(T.any(T::Boolean, String)))
             .returns(T::Boolean)
         end
         def enforcement_disabled?(privacy_option)

@@ -16,6 +16,11 @@ module Packwerk
         sig { abstract.params(reference: Reference).returns(T::Boolean) }
         def invalid_reference?(reference); end
 
+        sig { abstract.params(reference: Reference).returns(T.nilable(String)) }
+        def violation_level(reference)
+          nil
+        end
+
         sig { abstract.params(reference: Reference).returns(String) }
         def message(reference); end
 

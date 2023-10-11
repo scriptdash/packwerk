@@ -10,7 +10,8 @@ module Packwerk
 
           const :public_path, String
           const :user_defined_public_path, T.nilable(String)
-          const :enforce_privacy, T.nilable(T.any(T::Boolean, T::Array[String]))
+          const :enforce_privacy, T.nilable(T.any(T::Boolean, String))
+          const :explicitly_private_constants, T.nilable(T::Array[String])
 
           sig { params(path: String).returns(T::Boolean) }
           def public_path?(path)

@@ -67,12 +67,15 @@ module Packwerk
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context, show_errors: true, collect_references: true)
 
+      relaxed_offenses, true_offenses = offense_collection.outstanding_offenses.partition { |offense| offense.level == 'relaxed' }
       messages = [
-        @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
+        @offenses_formatter.show_offenses(relaxed_offenses),
+        'Fix the following, or run packwerk update-todo',
+        @offenses_formatter.show_offenses(true_offenses),
         @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
       ]
 
-      result_status = offense_collection.outstanding_offenses.empty? &&
+      result_status = true_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set)
 
       Result.new(message: messages.join("\n") + "\n", status: result_status)
