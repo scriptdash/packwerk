@@ -10,7 +10,7 @@ module Packwerk
         autoload :PrivacyProtectedPackage
 
         extend T::Sig
-        include Checker
+        include Packwerk::Checker
 
         VIOLATION_TYPE = T.let("privacy", String)
 
@@ -39,9 +39,9 @@ module Packwerk
           true
         end
 
-        sig { override.params(reference: Reference).returns(T.nilable(String)) }
-        def violation_level(reference)
-          reference.constant.package.enforce_privacy.to_s
+        sig { override.params(offense: ReferenceOffense).returns(T.nilable(String)) }
+        def violation_level(offense)
+          offense.reference.constant.package.enforce_privacy.to_s
         end
 
         sig do

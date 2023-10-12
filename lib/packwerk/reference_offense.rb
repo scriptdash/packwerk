@@ -18,13 +18,12 @@ module Packwerk
         reference: Packwerk::Reference,
         violation_type: String,
         message: String,
-        location: T.nilable(Node::Location),
-        level: T.nilable(String),
+        location: T.nilable(Node::Location)
       )
         .void
     end
-    def initialize(reference:, violation_type:, message:, location: nil, level: nil)
-      super(file: reference.relative_path, message: message, location: location, level: level)
+    def initialize(reference:, violation_type:, message:, location: nil)
+      super(file: reference.relative_path, message: message, location: location)
       @reference = reference
       @violation_type = violation_type
     end

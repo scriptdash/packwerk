@@ -7,7 +7,7 @@ module Packwerk
       # Checks whether a given reference conforms to the configured graph of dependencies.
       class DependencyChecker
         extend T::Sig
-        include Checker
+        include Packwerk::Checker
 
         VIOLATION_TYPE = T.let("dependency", String)
 

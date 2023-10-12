@@ -6,7 +6,7 @@ module Packwerk
     class ReferenceChecker
       extend T::Sig
 
-      sig { params(checkers: T::Array[Checkers::Checker], reference_collector: ReferenceCollector).void }
+      sig { params(checkers: T::Array[Checker], reference_collector: ReferenceCollector).void }
       def initialize(checkers, reference_collector = NoOpReferenceCollector.new)
         @checkers = checkers
         @reference_collector = reference_collector
@@ -32,8 +32,7 @@ module Packwerk
             location: reference.source_location,
             reference: reference,
             violation_type: checker.violation_type,
-            message: checker.message(reference),
-            level: checker.violation_level(reference),
+            message: checker.message(reference)
           )
           violations << offense
         end

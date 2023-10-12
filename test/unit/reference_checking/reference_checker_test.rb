@@ -8,7 +8,7 @@ module Packwerk
     include FactoryHelper
 
     class StubChecker
-      include ReferenceChecking::Checkers::Checker
+      include Packwerk::Checker
 
       def initialize(**options)
         @is_invalid_reference = options[:invalid_reference?]

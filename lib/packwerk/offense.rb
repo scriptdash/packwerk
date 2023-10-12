@@ -17,18 +17,14 @@ module Packwerk
     sig { returns(String) }
     attr_reader :message
 
-    sig { returns(T.nilable(String))}
-    attr_reader :level
-
     sig do
-      params(file: String, message: String, location: T.nilable(Node::Location), level: T.nilable(String))
+      params(file: String, message: String, location: T.nilable(Node::Location))
         .void
     end
-    def initialize(file:, message:, location: nil, level: nil)
+    def initialize(file:, message:, location: nil)
       @location = location
       @file = file
       @message = message
-      @level = level
     end
 
     sig { params(style: OutputStyle).returns(String) }
