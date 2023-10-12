@@ -67,10 +67,12 @@ module Packwerk
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context, show_errors: true, collect_references: true)
 
-      messages = [
-        @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
-        @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
-      ]
+      messages = [@offenses_formatter.show_offenses(offense_collection.relaxed_violations)]
+      if offense_collection.outstanding_offenses.present?
+        messages << "[ACTION REQUIRED] Fix the following, or run packwerk update-todo:"
+        messages << @offenses_formatter.show_offenses(offense_collection.outstanding_offenses)
+      end
+      messages << @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set)
 
       result_status = offense_collection.outstanding_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set)

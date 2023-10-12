@@ -18,11 +18,15 @@ module Packwerk
       @root_path = root_path
       @package_todo = T.let(package_todo, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
+      @relaxed_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
 
     sig { returns(T::Array[Packwerk::ReferenceOffense]) }
     attr_reader :new_violations
+
+    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    attr_reader :relaxed_violations
 
     sig { returns(T::Array[Packwerk::Offense]) }
     attr_reader :errors
@@ -46,9 +50,15 @@ module Packwerk
         @errors << offense
         return
       end
+      checker = Checker.find(offense.violation_type)
+      level = checker.violation_level(offense)
       package_todo = package_todo_for(offense.reference.source_package)
       unless package_todo.add_entries(offense.reference, offense.violation_type)
-        new_violations << offense
+        if level == "relaxed"
+          relaxed_violations << offense
+        else
+          new_violations << offense
+        end
       end
     end
 

@@ -46,7 +46,7 @@ module Packwerk
     end
 
     # These functions to get information about package privacy concerns will soon be removed
-    sig { returns(T.nilable(T.any(T::Boolean, T::Array[String]))) }
+    sig { returns(T.nilable(T.any(T::Boolean, String))) }
     def enforce_privacy
       privacy_protected_package.enforce_privacy
     end
@@ -54,6 +54,11 @@ module Packwerk
     sig { returns(T::Array[String]) }
     def public_constants
       @config["public_constants"] || []
+    end
+
+    sig { returns(T::Array[String]) }
+    def explicitly_private_constants
+      @config["private_constants"] || []
     end
 
     sig { returns(String) }

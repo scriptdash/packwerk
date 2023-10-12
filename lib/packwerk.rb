@@ -16,6 +16,7 @@ module Packwerk
   autoload :AssociationInspector
   autoload :OffenseCollection
   autoload :Cache
+  autoload :Checker
   autoload :Cli
   autoload :Configuration
   autoload :ConstantDiscovery
@@ -83,8 +84,6 @@ module Packwerk
     module Checkers
       extend ActiveSupport::Autoload
 
-      autoload :Checker
-
       autoload :DependencyChecker
       autoload :PrivacyChecker
     end
@@ -98,3 +97,6 @@ module Packwerk
     autoload :Helpers
   end
 end
+
+require "packwerk/reference_checking/checkers/dependency_checker"
+require "packwerk/reference_checking/checkers/privacy_checker"

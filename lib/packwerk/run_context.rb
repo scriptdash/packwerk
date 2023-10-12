@@ -8,10 +8,6 @@ module Packwerk
   class RunContext
     extend T::Sig
 
-    DEFAULT_CHECKERS = T.let([
-      ::Packwerk::ReferenceChecking::Checkers::DependencyChecker.new,
-      ::Packwerk::ReferenceChecking::Checkers::PrivacyChecker.new,
-    ], T::Array[ReferenceChecking::Checkers::Checker])
 
     class << self
       extend T::Sig
@@ -45,7 +41,7 @@ module Packwerk
         config_path: T.nilable(String),
         package_paths: T.nilable(T.any(T::Array[String], String)),
         custom_associations: AssociationInspector::CustomAssociations,
-        checkers: T::Array[ReferenceChecking::Checkers::Checker],
+        checkers: T::Array[Checker],
         cache_enabled: T::Boolean,
         reference_collector: T.nilable(ReferenceCollector),
       ).void
@@ -58,7 +54,7 @@ module Packwerk
       config_path: nil,
       package_paths: nil,
       custom_associations: [],
-      checkers: DEFAULT_CHECKERS,
+      checkers: Checker.all,
       cache_enabled: false,
       reference_collector: nil
     )
