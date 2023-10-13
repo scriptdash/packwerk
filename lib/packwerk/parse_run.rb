@@ -75,7 +75,7 @@ module Packwerk
 
       blocking_offenses = false
       if offense_collection.outstanding_offenses.present?
-        messages << "[ACTION REQUIRED] Fix the following, or run packwerk update-todo:"
+        messages << "[ERROR] Fix the following, or run packwerk update-todo:"
         messages << @offenses_formatter.show_offenses(offense_collection.outstanding_offenses)
         blocking_offenses = true
       end
